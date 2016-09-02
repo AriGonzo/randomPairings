@@ -1,0 +1,106 @@
+// Include Server Dependencies
+var express = require('express');
+var app = express();
+var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+var path = require('path');
+
+//Mongoose Models
+var User = require('./models/User');
+var Room = require('./models/Room');
+
+// Create Instance of Express
+var PORT = process.env.PORT || 4000; // Sets an initial port.
+
+// Run Morgan for Logging
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.text());
+app.use(bodyParser.json({type:'application/vnd.api+json'}));
+
+app.use(express.static('./public'));
+
+// MongoDB Configuration configuration
+mongoose.connect('mongodb://localhost:27017/randomRooms');
+mongoose.Promise = global.Promise;
+var db = mongoose.connection;
+
+db.on('error', function (err) {
+  console.log('Mongoose Error: ', err);
+});
+
+db.once('open', function () {
+  console.log('Mongoose connection successful.');
+});
+
+//Routes
+app.get('/', function (req, res) {
+	console.log('requested')
+  res.sendFile(path.join(__dirname, 'public', '/index.html'));
+});
+
+//Turn on Server
+server.listen(process.env.PORT || 4000, function(){
+	console.log('Listening on', PORT);
+});
+
+
+//Socket.io
+io.on('connection', function (socket) {
+	console.log('connected to socket.io!')
+
+	//Either creates a new user or will send back the user with a matching name
+	socket.on('new user', function(userSubmit){
+		User.findOne({name: userSubmit.name}).exec(function(err, user){
+			if (!user) {
+				var oUser = new User({
+					name: userSubmit.name,
+					image: userSubmit.image
+				});
+				oUser.save(function(err, user){
+					socket.emit('user created', user)
+				});
+			} else {
+				socket.emit('user exists', user);
+			}
+		});
+	});
+
+	//Join room event - Will check for open rooms, if none exist a new room is created
+	socket.on('join room', function(userObj){
+		Room.findOne({isOpen: true}).exec(function(err, room){
+			//if there is no open room, room parameter == null
+			if (room) {
+				room.players.push(userObj._id);
+				room.isOpen = false;
+				room.save(function(err, room){
+					confirmJoin(room, userObj);
+				});
+			} else {
+				room = new Room({
+					isOpen: true,
+					players: [userObj._id]
+				})
+				room.save(function(err, room){
+					if (err) throw err;
+					confirmJoin(room, userObj);
+				});
+			}
+
+			function confirmJoin(room, user){
+				console.log('room',room._id);
+				console.log('user', user);
+				socket.join(room._id);
+				io.to(room._id).emit('joined room', {room: room, user: user});
+			}
+		});	
+	});
+});
+
+
+
+
+
+
