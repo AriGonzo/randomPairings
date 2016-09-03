@@ -98,10 +98,9 @@ io.on('connection', function (socket) {
 			}
 		});	
 	});
+	//Receives message from client, adds it to Room model history and relays it to other connected clients
 	socket.on('send message', function(payload){
-		console.log(payload)
 		Room.findOne({_id: payload.room}).exec(function(err, room){
-			console.log('room is', room)
 			room.messages.push({
 				message: payload.message,
 				user: payload.user
@@ -111,9 +110,11 @@ io.on('connection', function (socket) {
 			});
 		});
 	});
+	//Upon other user leaving the room, you will also leave
 	socket.on('close down room - relay', function(){
 		socket.leave(globalRoom._id);
 	});
+	//Handles leaving a room and deleting it from the database
 	socket.on('disconnect', function(){
 		if (globalRoom){
 			leaveRoom();
