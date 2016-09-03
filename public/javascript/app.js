@@ -1,5 +1,5 @@
 var socket = io.connect('http://localhost:4000/');
-var userGlobal;
+var userGlobal, roomNameGlobal;
 
 $('#submitName').on('click', function(){
 	var userName = $('#userName');
@@ -17,6 +17,11 @@ $('#submitMessage').on('click', function(){
 		room: roomNameGlobal,
 		user: userGlobal
 	})
+	$('#message').val("")
+});
+
+socket.on('messages updated', function(payload){
+	$('#messagesList').append('<li>'+ payload.user.name +': '+ payload.message +'</li>');
 });
 
 $('#joinBtn').on('click', function(){
@@ -54,11 +59,13 @@ function setChatUI(payload) {
 		$('#messagesList').html("");
 		$('#messagesList').append('<li>Say Hi!</li>');
 	}
+	roomNameGlobal = payload.room._id;
 }
 
 function resetChatUI(){
 	$('#messagesContainer').addClass('hidden');
 	$('#joinBtnContainer').removeClass('hidden');
 	$('#messagesList').html("");
+	roomNameGlobal = "";
 }
 

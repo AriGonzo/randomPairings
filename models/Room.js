@@ -7,7 +7,10 @@ var RoomSchema = new Schema({
 		ref: 'User'
 	}],
 	isOpen: Boolean,
-	messages: [ String ]
+	messages: [ {
+		message: String,
+		user: Object
+	} ]
 });
 
 module.exports = mongoose.model('Room', RoomSchema);

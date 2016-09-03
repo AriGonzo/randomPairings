@@ -70,7 +70,6 @@ io.on('connection', function (socket) {
 			globalUser = user;
 		});
 	});
-
 	//Join room event - Will check for open rooms, if none exist a new room is created
 	socket.on('join room', function(userObj){
 		Room.findOne({isOpen: true}).populate('players').exec(function(err, room){
@@ -99,10 +98,22 @@ io.on('connection', function (socket) {
 			}
 		});	
 	});
+	socket.on('send message', function(payload){
+		console.log(payload)
+		Room.findOne({_id: payload.room}).exec(function(err, room){
+			console.log('room is', room)
+			room.messages.push({
+				message: payload.message,
+				user: payload.user
+			});
+			room.save(function(){
+				io.to(payload.room).emit('messages updated', payload);
+			});
+		});
+	});
 	socket.on('close down room - relay', function(){
 		socket.leave(globalRoom._id);
 	});
-
 	socket.on('disconnect', function(){
 		if (globalRoom){
 			leaveRoom();
