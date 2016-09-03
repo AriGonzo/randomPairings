@@ -62,10 +62,10 @@ io.on('connection', function (socket) {
 					image: userSubmit.image
 				});
 				oUser.save(function(err, user){
-					socket.emit('user created', user)
+					socket.emit('set user', user)
 				});
 			} else {
-				socket.emit('user exists', user);
+				socket.emit('set user', user);
 			}
 			globalUser = user;
 		});
@@ -99,6 +99,10 @@ io.on('connection', function (socket) {
 			}
 		});	
 	});
+	socket.on('close down room - relay', function(){
+		socket.leave(globalRoom._id);
+	});
+
 	socket.on('disconnect', function(){
 		if (globalRoom){
 			leaveRoom();
@@ -110,10 +114,6 @@ io.on('connection', function (socket) {
 			io.to(globalRoom._id).emit('close down room', globalRoom._id);
 		});
 	}
-
-	socket.on('close down room - relay', function(){
-		socket.leave(globalRoom._id);
-	});
 });
 
 

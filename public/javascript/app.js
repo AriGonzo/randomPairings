@@ -23,14 +23,8 @@ $('#joinBtn').on('click', function(){
 	socket.emit('join room', userGlobal)
 });
 
-socket.on('user created', function(user){
-	console.log('user created, setting now');
-	userGlobal = user;
-	setUserUI(userGlobal);
-});
-
-socket.on('user exists', function(user){
-	console.log('user exists, setting now')
+socket.on('set user', function(user){
+	console.log('setting user');
 	userGlobal = user;
 	setUserUI(userGlobal);
 });
