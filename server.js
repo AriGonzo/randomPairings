@@ -51,6 +51,8 @@ server.listen(process.env.PORT || 4000, function(){
 io.on('connection', function (socket) {
 	console.log('connected to socket.io!')
 
+	var globalUser, globalRoom;
+
 	//Either creates a new user or will send back the user with a matching name
 	socket.on('new user', function(userSubmit){
 		User.findOne({name: userSubmit.name}).exec(function(err, user){
@@ -65,12 +67,13 @@ io.on('connection', function (socket) {
 			} else {
 				socket.emit('user exists', user);
 			}
+			globalUser = user;
 		});
 	});
 
 	//Join room event - Will check for open rooms, if none exist a new room is created
 	socket.on('join room', function(userObj){
-		Room.findOne({isOpen: true}).exec(function(err, room){
+		Room.findOne({isOpen: true}).populate('players').exec(function(err, room){
 			//if there is no open room, room parameter == null
 			if (room) {
 				room.players.push(userObj._id);
@@ -90,12 +93,26 @@ io.on('connection', function (socket) {
 			}
 
 			function confirmJoin(room, user){
-				console.log('room',room._id);
-				console.log('user', user);
 				socket.join(room._id);
 				io.to(room._id).emit('joined room', {room: room, user: user});
+				globalRoom = room;
 			}
 		});	
+	});
+	socket.on('disconnect', function(){
+		if (globalRoom){
+			leaveRoom();
+		}
+	});
+
+	function leaveRoom(){
+		Room.remove({_id: globalRoom._id}, function(){
+			io.to(globalRoom._id).emit('close down room', globalRoom._id);
+		});
+	}
+
+	socket.on('close down room - relay', function(){
+		socket.leave(globalRoom._id);
 	});
 });
 

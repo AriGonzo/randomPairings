@@ -36,15 +36,12 @@ socket.on('user exists', function(user){
 });
 
 socket.on('joined room', function(payload){
-	$('#messagesContainer').removeClass('hidden');
-	$('#joinBtnContainer').addClass('hidden');
-	if (payload.room.players.length == 1) {
-		$('#messagesList').append('<li>Waiting on Another Person to Join...</li>');
-	} else {
-		$('#messagesList').html("");
-		$('#messagesList').append('<li>Say Hi!</li>');
-	}
-	console.log(payload)
+	setChatUI(payload);
+});
+
+socket.on('close down room', function(roomId){
+	socket.emit('close down room - relay');
+	resetChatUI();
 });
 
 function setUserUI(userObj) {
@@ -54,7 +51,20 @@ function setUserUI(userObj) {
 	$('#setUserImg').attr('src', userObj.image);
 }
 
-function setChatUI() {
+function setChatUI(payload) {
+	$('#messagesContainer').removeClass('hidden');
+	$('#joinBtnContainer').addClass('hidden');
+	if (payload.room.players.length == 1) {
+		$('#messagesList').append('<li>Waiting on Another Person to Join...</li>');
+	} else {
+		$('#messagesList').html("");
+		$('#messagesList').append('<li>Say Hi!</li>');
+	}
+}
 
+function resetChatUI(){
+	$('#messagesContainer').addClass('hidden');
+	$('#joinBtnContainer').removeClass('hidden');
+	$('#messagesList').html("");
 }
 
