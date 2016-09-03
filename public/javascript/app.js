@@ -36,7 +36,14 @@ socket.on('user exists', function(user){
 });
 
 socket.on('joined room', function(payload){
-	console.log('something')
+	$('#messagesContainer').removeClass('hidden');
+	$('#joinBtnContainer').addClass('hidden');
+	if (payload.room.players.length == 1) {
+		$('#messagesList').append('<li>Waiting on Another Person to Join...</li>');
+	} else {
+		$('#messagesList').html("");
+		$('#messagesList').append('<li>Say Hi!</li>');
+	}
 	console.log(payload)
 });
 
