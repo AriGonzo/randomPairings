@@ -6,46 +6,9 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 </head>
 <body>
-	<div class="container">
-		<div class="row">
-			<div class="col-md-4">
-				<div id="userInputContainer">
-					<input class="form-control" id="userName" type="text" placeholder="Your Name" />
-					<input class="form-control" id="imageLink" type="text" placeholder="Image URL" />
-					<a href="javascript:void(0)" id="submitName" class="btn btn-primary">Submit</a>
-				</div>
-				<div class="row" id="userProfile">
-					<div class="col-md-6">
-						<h1 id="setUserName"></h1>
-					</div>
-					<div class="col-md-6">
-						<img id="setUserImg" width="170px" />
-					</div>
-				</div>
-			</div>
-			<div class="col-md-8">
-				<div id="joinBtnContainer">
-					<a href="javascript:void(0)" id="joinBtn" class="btn btn-success disabled center-block">Join a Room</a>
-				</div>
-				<div class="hidden" id="messagesContainer">
-					<div id="showMessagesContainer">
-						<ul id="messagesList">
-							
-						</ul>
-					</div>
-					<div class="row">
-						<div class="col-md-9">
-							<input class="form-control" id="message" type="text" placeholder="Message" />
-						</div>
-						<div class="col-md-3">
-							<a href="javascript:void(0)" id="submitMessage" class="btn btn-primary">Submit</a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+	<div id="app"></div>
 	<script src="/socket.io/socket.io.js"></script>
+	<script src="bundle.js"></script>
 	<script src="/javascript/app.js"></script>
 </body>
 </html>
