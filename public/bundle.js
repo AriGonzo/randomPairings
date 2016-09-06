@@ -21564,7 +21564,10 @@
 	var Game = React.createClass({
 		displayName: 'Game',
 
-		clickSquare: function clickSquare(result) {},
+		clickSquare: function clickSquare(result) {
+			console.log(this.props.user);
+		},
+		checkScore: function checkScore() {},
 		render: function render() {
 			var values = [];
 			for (var i = 0; i <= 8; i++) {
@@ -21578,7 +21581,7 @@
 					'div',
 					{ className: 'row' },
 					values.map(function (result) {
-						return React.createElement(Square, { key: result, value: result, user: that.props.user });
+						return React.createElement(Square, { key: result, scoreboard: that.clickSquare, value: result, user: that.props.user });
 					})
 				)
 			);
@@ -22007,18 +22010,24 @@
 
 		getInitialState: function getInitialState() {
 			return {
-				marker: ""
+				marker: "",
+				classNames: "col-sm-4 space openSquare text-center"
 			};
 		},
 		clickSquare: function clickSquare(a) {
+			if (this.state.classNames.indexOf('closed') !== -1) {
+				return false;
+			}
 			this.setState({
-				marker: this.props.user.marker
+				marker: this.props.user.marker,
+				classNames: "col-sm-4 space closedSquare text-center"
 			});
+			this.props.scoreboard(a);
 		},
 		render: function render() {
 			return React.createElement(
 				"div",
-				{ className: "col-sm-4 space open text-center", onClick: this.clickSquare.bind(null, this.props.value) },
+				{ className: this.state.classNames, onClick: this.clickSquare.bind(null, this.props.value) },
 				React.createElement(
 					"div",
 					{ className: "gameMarker" },

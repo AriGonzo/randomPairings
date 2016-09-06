@@ -6,7 +6,10 @@ var Square = require('./Squares');
 
 var Game = React.createClass({
 	clickSquare: function(result){
-		
+		console.log(this.props.user)
+	},
+	checkScore: function(){
+
 	},
 	render: function(){
 		var values = [];
@@ -18,7 +21,7 @@ var Game = React.createClass({
 			<div id="gameBoard">
 				<div className="row">
 				{ values.map(function(result){
-					return <Square key={result} value={result} user={that.props.user} />
+					return <Square key={result} scoreboard={that.clickSquare} value={result} user={that.props.user} />
 				})}
 				</div>
 			</div>
