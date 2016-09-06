@@ -21457,8 +21457,21 @@
 		getInitialState: function getInitialState() {
 			var socket = io.connect('http://localhost:4000/');
 			return {
-				socket: socket
+				socket: socket,
+				user: false
 			};
+		},
+		componentDidMount: function componentDidMount() {
+			this.setUserSocket();
+		},
+		handleLogin: function handleLogin(userObj) {
+			this.state.socket.emit('new user', userObj);
+		},
+		setUserSocket: function setUserSocket() {
+			var that = this;
+			this.state.socket.on('set user', function (user) {
+				that.setState({ user: user });
+			});
 		},
 		render: function render() {
 			return React.createElement(
@@ -21467,7 +21480,7 @@
 				React.createElement(
 					'div',
 					{ className: 'row' },
-					React.createElement(Profile, { socket: this.state.socket }),
+					React.createElement(Profile, { user: this.state.user, login: this.handleLogin }),
 					React.createElement(Chat, null)
 				)
 			);
@@ -21480,68 +21493,48 @@
 /* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
 	// Include React 
 	var React = __webpack_require__(1);
 
 	var Profile = React.createClass({
-		displayName: 'Profile',
+		displayName: "Profile",
 
-		getInitialState: function getInitialState() {
-			this.setUserSocket();
-			return {
-				user: false
-			};
-		},
-		handleClick: function handleClick() {
-			var userName = document.getElementById('userName').value;
-			var image = document.getElementById('imageLink').value;
-
-			this.props.socket.emit('new user', {
-				name: userName,
-				image: image
-			});
-		},
-		setUserSocket: function setUserSocket() {
-			var that = this;
-			this.props.socket.on('set user', function (user) {
-				console.log(user);
-				that.setState({
-					user: user
-				});
-			});
-		},
 		render: function render() {
+			var _this = this;
+
 			return React.createElement(
-				'div',
-				{ className: 'col-md-4' },
-				this.state.user ? React.createElement(
-					'div',
-					{ className: 'row', id: 'userProfile' },
+				"div",
+				{ className: "col-md-4" },
+				this.props.user ? React.createElement(
+					"div",
+					{ className: "row", id: "userProfile" },
 					React.createElement(
-						'div',
-						{ className: 'col-md-6' },
+						"div",
+						{ className: "col-md-6" },
 						React.createElement(
-							'h1',
-							{ id: 'setUserName' },
-							this.state.user.name
+							"h1",
+							null,
+							this.props.user.name
 						)
 					),
 					React.createElement(
-						'div',
-						{ className: 'col-md-6' },
-						React.createElement('img', { id: 'setUserImg', width: '170px', href: this.state.user.image })
+						"div",
+						{ className: "col-md-6" },
+						React.createElement("img", { width: "170px", src: this.props.user.image })
 					)
 				) : React.createElement(
-					'div',
-					{ id: 'userInputContainer' },
-					React.createElement('input', { className: 'form-control', id: 'userName', type: 'text', placeholder: 'Your Name' }),
-					React.createElement('input', { className: 'form-control', id: 'imageLink', type: 'text', placeholder: 'Image URL' }),
+					"div",
+					{ id: "userInputContainer" },
+					React.createElement("input", { className: "form-control", id: "userName", type: "text", placeholder: "Your Name" }),
+					React.createElement("input", { className: "form-control", id: "imageLink", type: "text", placeholder: "Image URL" }),
 					React.createElement(
-						'a',
-						{ href: 'javascript:void(0)', onClick: this.handleClick, className: 'btn btn-primary' },
-						'Submit'
+						"a",
+						{ href: "javascript:void(0)", onClick: function onClick() {
+								return _this.props.login({ name: document.getElementById('userName').value, image: document.getElementById('imageLink').value });
+							}, className: "btn btn-primary" },
+						"Submit"
 					)
 				)
 			);

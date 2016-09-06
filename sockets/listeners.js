@@ -12,7 +12,7 @@ module.exports = function(server){
 
 		//Either creates a new user or will send back the user with a matching name
 		socket.on('new user', function(userSubmit){
-			User.findOne({username: userSubmit.name}).exec(function(err, user){
+			User.findOne({name: userSubmit.name}).exec(function(err, user){
 				if (!user) {
 					var oUser = new User({
 						name: userSubmit.name,
