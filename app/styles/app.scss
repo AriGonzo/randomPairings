@@ -1,0 +1,24 @@
+#app {
+	margin-top: 50px;
+}
+
+.space {
+	outline: solid black 1px;
+	height: 150px;
+	cursor: pointer;
+}
+
+#gameBoard {
+	width: 75%;
+	margin: auto;
+	margin-bottom: 25px;
+}
+
+.gameMarker {
+	position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    font-size: 100px;
+}

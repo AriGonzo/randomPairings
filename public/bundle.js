@@ -21448,7 +21448,7 @@
 
 	// Components
 	var Profile = __webpack_require__(176);
-	// var Game = require('./Game');
+	var Game = __webpack_require__(177);
 	var Chat = __webpack_require__(178);
 
 	var Main = React.createClass({
@@ -21470,6 +21470,7 @@
 		setUserSocket: function setUserSocket() {
 			var that = this;
 			this.state.socket.on('set user', function (user) {
+				user.marker = "O";
 				that.setState({ user: user });
 			});
 		},
@@ -21481,7 +21482,12 @@
 					'div',
 					{ className: 'row' },
 					React.createElement(Profile, { user: this.state.user, login: this.handleLogin }),
-					React.createElement(Chat, null)
+					React.createElement(
+						'div',
+						{ className: 'col-md-8' },
+						React.createElement(Game, { user: this.state.user }),
+						React.createElement(Chat, { user: this.state.user })
+					)
 				)
 			);
 		}
@@ -21544,7 +21550,44 @@
 	module.exports = Profile;
 
 /***/ },
-/* 177 */,
+/* 177 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	// Include React 
+	var React = __webpack_require__(1);
+
+	// Components
+	var Square = __webpack_require__(183);
+
+	var Game = React.createClass({
+		displayName: 'Game',
+
+		clickSquare: function clickSquare(result) {},
+		render: function render() {
+			var values = [];
+			for (var i = 0; i <= 8; i++) {
+				values.push(i);
+			}
+			var that = this;
+			return React.createElement(
+				'div',
+				{ id: 'gameBoard' },
+				React.createElement(
+					'div',
+					{ className: 'row' },
+					values.map(function (result) {
+						return React.createElement(Square, { key: result, value: result, user: that.props.user });
+					})
+				)
+			);
+		}
+	});
+
+	module.exports = Game;
+
+/***/ },
 /* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -21559,13 +21602,13 @@
 		render: function render() {
 			return React.createElement(
 				"div",
-				{ className: "col-md-8" },
+				null,
 				React.createElement(
 					"div",
 					{ id: "joinBtnContainer" },
 					React.createElement(
 						"a",
-						{ href: "javascript:void(0)", id: "joinBtn", className: "btn btn-success disabled center-block" },
+						{ href: "javascript:void(0)", id: "joinBtn", className: this.props.user ? "btn btn-success center-block" : "btn btn-success center-block disabled" },
 						"Join a Room"
 					)
 				),
@@ -21637,7 +21680,7 @@
 
 
 	// module
-	exports.push([module.id, "", ""]);
+	exports.push([module.id, "#app {\n  margin-top: 50px; }\n\n.space {\n  outline: solid black 1px;\n  height: 150px;\n  cursor: pointer; }\n\n#gameBoard {\n  width: 75%;\n  margin: auto;\n  margin-bottom: 25px; }\n\n.gameMarker {\n  position: absolute;\n  left: 0;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  font-size: 100px; }\n", ""]);
 
 	// exports
 
@@ -21949,6 +21992,43 @@
 			URL.revokeObjectURL(oldSrc);
 	}
 
+
+/***/ },
+/* 183 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	// Include React 
+	var React = __webpack_require__(1);
+
+	var Square = React.createClass({
+		displayName: "Square",
+
+		getInitialState: function getInitialState() {
+			return {
+				marker: ""
+			};
+		},
+		clickSquare: function clickSquare(a) {
+			this.setState({
+				marker: this.props.user.marker
+			});
+		},
+		render: function render() {
+			return React.createElement(
+				"div",
+				{ className: "col-sm-4 space open text-center", onClick: this.clickSquare.bind(null, this.props.value) },
+				React.createElement(
+					"div",
+					{ className: "gameMarker" },
+					this.state.marker
+				)
+			);
+		}
+	});
+
+	module.exports = Square;
 
 /***/ }
 /******/ ]);

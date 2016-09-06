@@ -4,9 +4,9 @@ var React = require('react');
 var Chat = React.createClass({
 	render: function(){
 		return (
-			<div className="col-md-8">
+			<div>
 				<div id="joinBtnContainer">
-					<a href="javascript:void(0)" id="joinBtn" className="btn btn-success disabled center-block">Join a Room</a>
+					<a href="javascript:void(0)" id="joinBtn" className={this.props.user ? "btn btn-success center-block" : "btn btn-success center-block disabled"}>Join a Room</a>
 				</div>
 				<div className="hidden" id="messagesContainer">
 					<div id="showMessagesContainer">

@@ -3,7 +3,7 @@ var React = require('react');
 
 // Components
 var Profile = require('./Profile');
-// var Game = require('./Game');
+var Game = require('./Game');
 var Chat = require('./Chat');
 
 var Main = React.createClass({
@@ -23,6 +23,7 @@ var Main = React.createClass({
 	setUserSocket: function(){
 		var that = this;
 		this.state.socket.on('set user', function(user){
+			user.marker = "O"
 			that.setState({user});
 		})
 	},
@@ -31,7 +32,10 @@ var Main = React.createClass({
 			<div className="container">
 				<div className="row">
 					<Profile user={this.state.user} login={this.handleLogin}/>
-					<Chat />
+					<div className="col-md-8">
+						<Game user={this.state.user} />
+						<Chat user={this.state.user} />
+					</div>
 				</div>
 			</div>
 			);
